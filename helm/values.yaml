@@ -1,0 +1,62 @@
+pihole:
+
+  serviceDns:
+    type: LoadBalancer
+
+  persistentVolumeClaim:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 500Mi
+
+  extraEnvVars:
+    TZ: America/New_York
+
+  DNS1: "10.0.10.1"
+  DNS2: "8.8.8.8"
+
+  adlists:
+    # SUSPICIOUS
+    - https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
+    - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    - https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt
+    - https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.Spam/hosts
+    - https://v.firebog.net/hosts/static/w3kbl.txt
+
+    # Advertising
+    - https://adaway.org/hosts.txt
+    - https://v.firebog.net/hosts/AdguardDNS.txt
+    - https://v.firebog.net/hosts/Admiral.txt
+    - https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
+    - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+    - https://v.firebog.net/hosts/Easylist.txt
+    - https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext    
+    - https://raw.githubusercontent.com/FadeMind/hosts.extras/master/UncheckyAds/hosts
+    - https://raw.githubusercontent.com/bigdargon/hostsVN/master/hosts
+  
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+
+    annotations:
+      cert-manager.io/cluster-issuer: homelab-ca-issuer
+
+      nginx.ingress.kubernetes.io/auth-url: |-
+        http://ak-outpost-pihole.pihole.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+
+      nginx.ingress.kubernetes.io/auth-signin: |-
+        https://pihole.home.lab/outpost.goauthentik.io/start?rd=$escaped_request_uri
+    
+      nginx.ingress.kubernetes.io/auth-response-headers: |-
+        Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
+    
+      nginx.ingress.kubernetes.io/auth-snippet: |
+        proxy_set_header X-Forwarded-Host $http_host;
+
+    path: /
+    hosts:
+      - pihole.home.lab
+    tls:
+      - secretName: tls-pihome.home.lab
+        hosts:
+          - pihole.home.lab

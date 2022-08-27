@@ -1,0 +1,16 @@
+apiVersion: v2
+name: helm
+description: A Helm chart for PiHoke
+type: application
+
+version: 0.1.0
+appVersion: "0.1.0"
+
+maintainers:
+  - name: Tim Hibbard
+    email: vptimmy@gmail.com
+
+dependencies:
+  - name: pihole
+    version: "2.9.1"
+    repository:  https://mojo2600.github.io/pihole-kubernetes/
