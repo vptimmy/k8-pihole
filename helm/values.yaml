@@ -13,7 +13,14 @@ pihole:
     TZ: America/New_York
 
   DNS1: "10.0.10.1"
-  DNS2: "8.8.8.8"
+  DNS2: "10.0.20.1"
+  
+  podDnsConfig:
+    enabled: true
+    policy: "None"
+    nameservers:
+    - 127.0.0.1
+    - 10.0.10.1
 
   adlists:
     # SUSPICIOUS
